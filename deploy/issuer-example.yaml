@@ -15,10 +15,14 @@ spec:
           groupName: k8s.fehe.eu
           solverName: etcd
           config:
-            endpoints: ["your-dns-server-etcd:2379"]
-            user:
-              secretKeyRef: issuer-etcd-credentials
-              key: user
-            password:
-              secretKeyRef: issuer-etcd-credentials
-              key: password
+            keyPrefix: /skydns
+            etcd:
+              endpoints: ["your-dns-server-etcd:2379"]
+              user:
+                secretKeyRef: 
+                  name: issuer-etcd-credentials
+                  key: user
+              password:
+                secretKeyRef: 
+                  name: issuer-etcd-credentials
+                  key: password
