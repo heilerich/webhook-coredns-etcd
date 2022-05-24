@@ -1,0 +1,81 @@
+version: '3.8'
+
+networks:
+  webhook:
+    driver: bridge
+
+services:
+  vscode:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        VARIANT: 1.17-bullseye
+        NODE_VERSION: "none"
+        USER_UID: "501"
+
+    volumes:
+      - ..:/workspace
+    cap_add:
+      - "SYS_PTRACE"
+    security_opt:
+      - "seccomp=unconfined"
+    command: ["sh", "-c", "sleep infinity"]
+    networks:
+      - webhook
+
+  etcd:
+    image: 'gcr.io/etcd-development/etcd'
+    entrypoint: ["/bin/sh", "-c"]
+    user: root
+    command:
+      - |
+        /usr/local/bin/etcd \
+          --enable-v2=false \
+          --debug \
+          --listen-client-urls='http://0.0.0.0:2379' &
+        sleep 2
+        etcdctl user add "root:password"
+        etcdctl auth enable
+        etcdctl user add "coredns:corepass"
+        etcdctl role add coredns
+        etcdctl role grant-permission coredns --prefix=true read /skydns/test/zone/
+        etcdctl user grant-role coredns coredns
+
+        etcdctl user add "test-user:test-pass"
+        etcdctl role add test-role
+        etcdctl user grant-role test-user test-role
+        etcdctl role grant-permission test-role --prefix=true readwrite /skydns/test/zone/suite/
+
+        # etcdctl put /skydns/test/zone/a1 '{"host":"1.1.1.1","ttl":60}'
+        # etcdctl put /skydns/test/zone/a2 '{"host":"1.1.1.2","ttl":60}'
+        # etcdctl put /skydns/test/zone/ '{"host":"1.1.1.0","ttl":60}'
+
+        # etcdctl put /skydns/test/zone/sub/a1 '{"host":"2003::8:1","ttl":60,"group":"sub"}'
+        # etcdctl put /skydns/test/zone/sub/a1 '{"host":"1.1.1.3","ttl":60,"group":"sub"}'
+
+        # etcdctl put /skydns/test/zone/txt '{"ttl":60,"text":"root text","group":"txt"}'
+        # etcdctl put /skydns/test/zone/txt/t1 '{"ttl":60,"text":"text t1","group":"txt"}'
+
+        # etcdctl put /skydns/test/zone/ct/a1 '{"host":"bop.zone.test","ttl":60,"group":"a"}'
+        # etcdctl put /skydns/test/zone/ct/a2 '{"host":"bip.zone.test","ttl":60,"group":"a"}'
+        wait
+    environment:
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCDCTL_USER=root:password
+      - ETCDCTL_API=3
+    expose:
+      - "2379"
+      - "2380"
+    networks:
+      - webhook
+
+  coredns:
+    image: coredns/coredns
+    ports:
+      - "5358:5354/udp"
+      - "5358:5354/tcp"
+    volumes:
+      - ../Corefile:/Corefile:ro
+    networks:
+      - webhook

@@ -1,0 +1,41 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: webhook-ca-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ca-certificate
+spec:
+  secretName: ca-certificate
+  duration: 43800h # 5y
+  issuerRef:
+    name: webhook-ca-issuer
+  commonName: "ca.webhook-coredns-etcd.k8s.fehe.eu"
+  isCA: true
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: webhook-issuer
+spec:
+  ca:
+    secretName: ca-certificate
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: webhook-certificate
+spec:
+  secretName: webhook-certificate
+  duration: 8760h # 1y
+  issuerRef:
+    name: webhook-issuer
+  dnsNames:
+  - webhook-coredns-etcd
+  - webhook-coredns-etcd.webhook-coredns-etcd
+  - webhook-coredns-etcd.webhook-coredns-etcd.svc

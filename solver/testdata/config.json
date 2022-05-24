@@ -1,0 +1,18 @@
+{
+    "keyPrefix": "/skydns",
+    "etcd": {
+        "endpoints": ["etcd:2379"],
+        "user": {
+            "secretKeyRef": {
+                "name": "issuer-secret",
+                "key": "user"
+            }
+        },
+        "password": {
+            "secretKeyRef": {
+                "name": "issuer-secret",
+                "key": "password"
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- apiservice.yaml
+- deployment.yaml
+- pki.yaml
+- rbac.yaml
+- service.yaml
+
+commonLabels:
+  app.kubernetes.io/name: webhook-coredns-etcd
+
+namespace: webhook-coredns-etcd
+
+images:
+  - name: webhook-server
+    newName: ghcr.io/heilerich/webhook-coredns-etcd
+    newTag: latest

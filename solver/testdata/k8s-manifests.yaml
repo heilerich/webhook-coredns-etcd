@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: issuer-secret
+stringData:
+  user: test-user
+  password: test-pass

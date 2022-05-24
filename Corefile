@@ -1,0 +1,8 @@
+zone.test:5354 {
+    etcd {
+        path /skydns
+        endpoint http://etcd:2379
+        credentials coredns corepass
+    }
+    log
+}
