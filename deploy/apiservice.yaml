@@ -5,7 +5,7 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: "webhook-coredns-etcd/webhook-certificate"
 spec:
-  group: v1alpha1.k8s.fehe.eu
+  group: k8s.fehe.eu
   groupPriorityMinimum: 1000
   versionPriority: 15
   service:
