@@ -6,11 +6,10 @@ resources:
 - pki.yaml
 - rbac.yaml
 - service.yaml
+- namespace.yaml
 
 commonLabels:
   app.kubernetes.io/name: webhook-coredns-etcd
-
-namespace: webhook-coredns-etcd
 
 images:
   - name: webhook-server

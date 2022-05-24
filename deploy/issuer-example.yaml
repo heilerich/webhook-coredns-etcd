@@ -1,0 +1,24 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: your-email@example.com
+    privateKeySecretRef:
+      name: letsencrypt-issuer-account-key
+    solvers:
+    - dns01:
+        webhook:
+          groupName: k8s.fehe.eu
+          solverName: etcd
+          config:
+            endpoints: ["your-dns-server-etcd:2379"]
+            user:
+              secretKeyRef: issuer-etcd-credentials
+              key: user
+            password:
+              secretKeyRef: issuer-etcd-credentials
+              key: password

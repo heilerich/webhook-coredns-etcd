@@ -3,6 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: webhook-ca-issuer
+  namespace: webhook-coredns-etcd
 spec:
   selfSigned: {}
 ---
@@ -10,6 +11,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ca-certificate
+  namespace: webhook-coredns-etcd
 spec:
   secretName: ca-certificate
   duration: 43800h # 5y
@@ -30,6 +32,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: webhook-certificate
+  namespace: webhook-coredns-etcd
 spec:
   secretName: webhook-certificate
   duration: 8760h # 1y
